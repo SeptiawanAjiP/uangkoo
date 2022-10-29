@@ -1,6 +1,6 @@
 # uangkoo
 
-Money Tracker App with Flutter
+Money Tracker App with Flutter - Soon
 
 <img
   src="https://i.ibb.co/VY756CF/Youtube-Thumbnail-38.png"
