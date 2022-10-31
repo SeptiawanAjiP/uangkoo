@@ -36,6 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^3.0.1
   calendar_appbar: ^0.0.6
+  drift: ^2.2.0
+  sqlite3_flutter_libs: ^0.5.0
+  path_provider: ^2.0.0
+  path: ^1.8.1
   
 
 dev_dependencies:
@@ -48,6 +52,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  drift_dev: ^2.2.0+1
+  build_runner: ^2.2.1
   
 
 # For information on the generic Dart part of this file, see the
