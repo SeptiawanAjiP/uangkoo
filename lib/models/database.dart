@@ -21,8 +21,22 @@ class AppDb extends _$AppDb {
   @override
   int get schemaVersion => 1;
 
+  // CRUD Category
   Future<List<Category>> getAllCategory(int type) async {
-    return (select(categories)..where((tbl) => tbl.type.equals(type))).get();
+    return await (select(categories)..where((tbl) => tbl.type.equals(type)))
+        .get();
+  }
+
+  Future updateCategory(int id, String newName) async {
+    return (update(categories)..where((t) => t.id.equals(id))).write(
+      CategoriesCompanion(
+        name: Value(newName),
+      ),
+    );
+  }
+
+  Future deleteCategory(int id) async {
+    return (delete(categories)..where((t) => t.id.equals(id))).go();
   }
 }
 

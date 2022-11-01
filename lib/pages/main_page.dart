@@ -22,7 +22,6 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _children = [HomePage(), CategoryPage()];
   int currentIndex = 0;
 
-  bool isOutcome = true;
   final database = AppDb();
 
   TextEditingController categoryNameController = TextEditingController();
@@ -32,12 +31,6 @@ class _MainPageState extends State<MainPage> {
     // TODO: implement initState
     showAwe();
     super.initState();
-  }
-
-  Future insert(String name, int type) async {
-    DateTime now = DateTime.now();
-    await database.into(database.categories).insert(CategoriesCompanion.insert(
-        name: name, type: type, createdAt: now, updatedAt: now));
   }
 
   Future<List<Category>> getAllCategory() {
@@ -55,78 +48,13 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  void add() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(builder: (context, setState) {
-            return AlertDialog(
-              content: SingleChildScrollView(
-                  child: Center(
-                      child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text("Category",
-                      style: GoogleFonts.montserrat(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Switch(
-                        // This bool value toggles the switch.
-                        value: isOutcome,
-                        inactiveTrackColor: Colors.green[200],
-                        inactiveThumbColor: Colors.green,
-                        activeColor: Colors.red,
-                        onChanged: (bool value) {
-                          // This is called when the user toggles the switch.
-                          setState(() {
-                            isOutcome = value;
-                          });
-                        },
-                      ),
-                      Text(
-                        isOutcome ? "Outcome" : "Income",
-                        style: GoogleFonts.montserrat(fontSize: 14),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextFormField(
-                    controller: categoryNameController,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(), hintText: "Name"),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        insert(categoryNameController.text, isOutcome ? 1 : 2);
-                        Navigator.of(context, rootNavigator: true)
-                            .pop('dialog');
-
-                        SnackBar(content: Text("Data successfully saved."));
-                      },
-                      child: Text("Save"))
-                ],
-              ))),
-            );
-          });
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         floatingActionButton: Visibility(
           visible: (currentIndex == 0) ? true : false,
           child: FloatingActionButton(
-              onPressed: () {
-                add();
-              },
+              onPressed: () {},
               backgroundColor: Colors.green,
               child: Icon(Icons.add)),
         ),

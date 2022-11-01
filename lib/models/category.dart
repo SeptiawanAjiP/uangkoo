@@ -9,3 +9,8 @@ class Categories extends Table {
   DateTimeColumn get updatedAt => dateTime()();
   DateTimeColumn get deletedAt => dateTime().nullable()();
 }
+
+/*
+  1. Income
+  2. Expense
+*/
