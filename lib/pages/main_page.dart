@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:uangkoo/models/database.dart';
 import 'package:uangkoo/pages/category_page.dart';
 import 'package:uangkoo/pages/home_page.dart';
@@ -18,9 +19,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  DateTime? selectedDate;
-  Random random = new Random();
-  final List<Widget> _children = [HomePage(), CategoryPage()];
+  late DateTime date;
+  late List<Widget> _children;
   int currentIndex = 0;
 
   final database = AppDb();
@@ -30,7 +30,13 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     // TODO: implement initState
-    showAwe();
+    date = DateTime.now();
+    _children = [
+      HomePage(
+        selectedDate: date,
+      ),
+      CategoryPage()
+    ];
     super.initState();
   }
 
@@ -46,6 +52,12 @@ class _MainPageState extends State<MainPage> {
   void onTabTapped(int index) {
     setState(() {
       currentIndex = index;
+      _children = [
+        HomePage(
+          selectedDate: date,
+        ),
+        CategoryPage()
+      ];
     });
   }
 
@@ -107,12 +119,19 @@ class _MainPageState extends State<MainPage> {
                 backButton: false,
                 accent: Colors.green,
                 locale: 'en',
-                onDateChanged: (value) => setState(() => selectedDate = value),
+                onDateChanged: (value) {
+                  setState(() {
+                    date = value;
+                    _children = [
+                      HomePage(
+                        selectedDate: DateTime.parse(
+                            DateFormat('yyyy-MM-dd').format(date)),
+                      ),
+                      CategoryPage()
+                    ];
+                  });
+                },
                 lastDate: DateTime.now(),
-                events: List.generate(
-                    100,
-                    (index) => DateTime.now()
-                        .subtract(Duration(days: index * random.nextInt(5)))),
               ));
   }
 }

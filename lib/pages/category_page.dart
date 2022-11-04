@@ -14,22 +14,23 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   bool? isExpense;
   int? type;
-  final database = AppDb();
+  final AppDb database = AppDb();
   List<Category> listCategory = [];
   TextEditingController categoryNameController = TextEditingController();
 
   Future<List<Category>> getAllCategory(int type) async {
-    return await database.getAllCategory(type);
+    return await database.getAllCategoryRepo(type);
   }
 
   Future insert(String name, int type) async {
     DateTime now = DateTime.now();
-    await database.into(database.categories).insert(CategoriesCompanion.insert(
-        name: name, type: type, createdAt: now, updatedAt: now));
+    await database.into(database.categories).insertReturning(
+        CategoriesCompanion.insert(
+            name: name, type: type, createdAt: now, updatedAt: now));
   }
 
   Future update(int categoryId, String newName) async {
-    await database.updateCategory(categoryId, newName);
+    await database.updateCategoryRepo(categoryId, newName);
   }
 
   @override
@@ -111,7 +112,6 @@ class _CategoryPageState extends State<CategoryPage> {
                       // This is called when the user toggles the switch.
                       setState(() {
                         isExpense = value;
-                        print('Nilai value : ' + value.toString());
                         type = (value) ? 2 : 1;
                       });
                     },
@@ -155,7 +155,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                   IconButton(
                                     icon: Icon(Icons.delete),
                                     onPressed: () {
-                                      database.deleteCategory(
+                                      database.deleteCategoryRepo(
                                           snapshot.data![index].id);
                                       setState(() {});
                                     },
