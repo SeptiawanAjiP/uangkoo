@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uangkoo/models/database.dart';
+import 'package:uangkoo/models/transaction_with_category.dart';
 import 'package:uangkoo/pages/category_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,10 +26,6 @@ class _HomePageState extends State<HomePage> {
     // TODO: implement initState
 
     super.initState();
-  }
-
-  Future<List<Transaction>> getTransactionByDate(DateTime date) async {
-    return await database.getTransactionByDateRepo(date);
   }
 
   // page controller
@@ -130,8 +127,8 @@ class _HomePageState extends State<HomePage> {
                     fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
-            FutureBuilder<List<Transaction>>(
-                future: getTransactionByDate(widget.selectedDate),
+            StreamBuilder<List<TransactionWithCategory>>(
+                stream: database.getTransactionByDateRepo(widget.selectedDate),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
@@ -159,19 +156,28 @@ class _HomePageState extends State<HomePage> {
                                       Icon(Icons.edit)
                                     ],
                                   ),
-                                  subtitle: Text(''),
+                                  subtitle:
+                                      Text(snapshot.data![index].category.name),
                                   leading: Container(
                                       padding: EdgeInsets.all(3),
                                       decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius:
                                               BorderRadius.circular(8)),
-                                      child: Icon(
-                                        Icons.download,
-                                        color: Colors.greenAccent[400],
-                                      )),
+                                      child: (snapshot
+                                                  .data![index].category.type ==
+                                              1)
+                                          ? Icon(
+                                              Icons.download,
+                                              color: Colors.greenAccent[400],
+                                            )
+                                          : Icon(
+                                              Icons.upload,
+                                              color: Colors.red[400],
+                                            )),
                                   title: Text(
-                                    snapshot.data![index].amount.toString(),
+                                    snapshot.data![index].transaction.amount
+                                        .toString(),
                                   ),
                                 ),
                               ),

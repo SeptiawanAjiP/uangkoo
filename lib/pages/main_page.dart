@@ -30,7 +30,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     // TODO: implement initState
-    date = DateTime.now();
+    date = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now()));
     _children = [
       HomePage(
         selectedDate: date,

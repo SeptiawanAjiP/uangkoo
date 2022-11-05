@@ -20,13 +20,14 @@ class _TransactionPageState extends State<TransactionPage> {
   Category? selectedCategory;
   TextEditingController dateController = TextEditingController();
   TextEditingController amountController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
-  Future insert(String name, int categoryId, int amount, DateTime date) async {
-    print(name);
+  Future insert(
+      String description, int categoryId, int amount, DateTime date) async {
     DateTime now = DateTime.now();
     final row = await database.into(database.transactions).insertReturning(
         TransactionsCompanion.insert(
-            name: name,
+            description: description,
             category_id: categoryId,
             amount: amount,
             transaction_date: date,
@@ -172,13 +173,26 @@ class _TransactionPageState extends State<TransactionPage> {
                 },
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: TextFormField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: 'Description',
+                ),
+              ),
+            ),
             SizedBox(
               height: 20,
             ),
             Center(
                 child: ElevatedButton(
                     onPressed: () {
-                      insert('BLABLA', type, int.parse(amountController.text),
+                      insert(
+                          descriptionController.text,
+                          selectedCategory!.id,
+                          int.parse(amountController.text),
                           DateTime.parse(dateController.text));
                       Navigator.pop(context, true);
                     },

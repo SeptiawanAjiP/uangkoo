@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:uangkoo/models/category.dart';
 import 'package:uangkoo/models/transaction.dart';
+import 'package:uangkoo/models/transaction_with_category.dart';
 
 part 'database.g.dart';
 
@@ -19,7 +20,7 @@ class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 6;
 
   // CRUD Category
   Future<List<Category>> getAllCategoryRepo(int type) async {
@@ -40,10 +41,20 @@ class AppDb extends _$AppDb {
   }
 
   // CRUD Transaction
-  Future<List<Transaction>> getTransactionByDateRepo(DateTime date) async {
-    return await (select(transactions)
-          ..where((tbl) => tbl.transaction_date.equals(date)))
-        .get();
+  Stream<List<TransactionWithCategory>> getTransactionByDateRepo(
+      DateTime date) {
+    final query = (select(transactions).join([
+      innerJoin(categories, categories.id.equalsExp(transactions.category_id))
+    ])
+      ..where(transactions.transaction_date.equals(date)));
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        return TransactionWithCategory(
+          row.readTable(transactions),
+          row.readTable(categories),
+        );
+      }).toList();
+    });
   }
 }
 
