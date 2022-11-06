@@ -40,7 +40,6 @@ class _TransactionPageState extends State<TransactionPage> {
   void initState() {
     // TODO: implement initState
     dateController.text = "";
-    getAllCategory(2);
 
     super.initState();
   }
@@ -70,6 +69,7 @@ class _TransactionPageState extends State<TransactionPage> {
                     setState(() {
                       isExpense = value;
                       type = (isExpense) ? 2 : 1;
+                      selectedCategory = null;
                     });
                   },
                 ),
@@ -107,17 +107,19 @@ class _TransactionPageState extends State<TransactionPage> {
                     return CircularProgressIndicator();
                   } else {
                     if (snapshot.hasData) {
-                      print(snapshot.data.toString());
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: DropdownButton<Category>(
                           isExpanded: true,
-                          value: snapshot.data!.first,
+                          value: (selectedCategory == null)
+                              ? snapshot.data!.first
+                              : selectedCategory,
                           icon: const Icon(Icons.arrow_downward),
                           elevation: 16,
                           onChanged: (Category? newValue) {
+                            print(newValue!.name);
                             setState(() {
-                              selectedCategory = newValue!;
+                              selectedCategory = newValue;
                             });
                           },
                           items: snapshot.data!.map((Category value) {

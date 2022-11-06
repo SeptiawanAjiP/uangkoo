@@ -19,9 +19,9 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  late DateTime date;
+  late DateTime selectedDate;
   late List<Widget> _children;
-  int currentIndex = 0;
+  late int currentIndex;
 
   final database = AppDb();
 
@@ -30,10 +30,12 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     // TODO: implement initState
-    date = DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    selectedDate =
+        DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now()));
+    currentIndex = 0;
     _children = [
       HomePage(
-        selectedDate: date,
+        selectedDate: selectedDate,
       ),
       CategoryPage()
     ];
@@ -51,10 +53,12 @@ class _MainPageState extends State<MainPage> {
 
   void onTabTapped(int index) {
     setState(() {
+      selectedDate =
+          DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now()));
       currentIndex = index;
       _children = [
         HomePage(
-          selectedDate: date,
+          selectedDate: selectedDate,
         ),
         CategoryPage()
       ];
@@ -70,11 +74,17 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(
-                  builder: (context) => TransactionPage(),
-                ))
-                    .then((value) {
-                  setState(() {});
-                });
+                      builder: (context) => TransactionPage(),
+                    ))
+                    .then((value) {});
+                currentIndex = 0;
+                _children = [
+                  HomePage(
+                    selectedDate: selectedDate,
+                  ),
+                  CategoryPage()
+                ];
+                setState(() {});
               },
               backgroundColor: Colors.green,
               child: Icon(Icons.add)),
@@ -121,17 +131,17 @@ class _MainPageState extends State<MainPage> {
                 locale: 'en',
                 onDateChanged: (value) {
                   setState(() {
-                    date = value;
+                    selectedDate = value;
+                    currentIndex = 0;
                     _children = [
                       HomePage(
                         selectedDate: DateTime.parse(
-                            DateFormat('yyyy-MM-dd').format(date)),
+                            DateFormat('yyyy-MM-dd').format(selectedDate)),
                       ),
                       CategoryPage()
                     ];
                   });
                 },
-                lastDate: DateTime.now(),
-              ));
+                lastDate: DateTime.now()));
   }
 }

@@ -137,6 +137,7 @@ class _HomePageState extends State<HomePage> {
                   } else {
                     if (snapshot.hasData) {
                       return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
