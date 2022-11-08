@@ -5,9 +5,13 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uangkoo/models/database.dart';
+import 'package:uangkoo/models/transaction.dart';
+import 'package:uangkoo/models/transaction_with_category.dart';
 
 class TransactionPage extends StatefulWidget {
-  const TransactionPage({Key? key}) : super(key: key);
+  final TransactionWithCategory? transactionsWithCategory;
+  const TransactionPage({Key? key, required this.transactionsWithCategory})
+      : super(key: key);
 
   @override
   State<TransactionPage> createState() => _TransactionPageState();
@@ -15,7 +19,7 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   bool isExpense = true;
-  int type = 2;
+  late int type;
   final AppDb database = AppDb();
   Category? selectedCategory;
   TextEditingController dateController = TextEditingController();
@@ -33,19 +37,35 @@ class _TransactionPageState extends State<TransactionPage> {
             transaction_date: date,
             created_at: now,
             updated_at: now));
-    print(row);
   }
 
   @override
   void initState() {
     // TODO: implement initState
-    dateController.text = "";
+    if (widget.transactionsWithCategory != null) {
+      updateTransaction(widget.transactionsWithCategory!);
+    } else {
+      type = 2;
+
+      dateController.text = "";
+    }
 
     super.initState();
   }
 
   Future<List<Category>> getAllCategory(int type) async {
     return await database.getAllCategoryRepo(type);
+  }
+
+  void updateTransaction(TransactionWithCategory initTransaction) {
+    amountController.text = initTransaction.transaction.amount.toString();
+    descriptionController.text =
+        initTransaction.transaction.description.toString();
+    dateController.text = DateFormat('yyyy-MM-dd')
+        .format(initTransaction.transaction.transaction_date);
+    type = initTransaction.category.type;
+    (type == 2) ? isExpense = true : isExpense = false;
+    selectedCategory = initTransaction.category;
   }
 
   @override
@@ -140,14 +160,10 @@ class _TransactionPageState extends State<TransactionPage> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                controller:
-                    dateController, //editing controller of this TextField
-                decoration: const InputDecoration(
-                    //icon of text field
-                    labelText: "Enter Date" //label text of field
-                    ),
-                readOnly: true, // when true user cannot edit text
+              child: TextFormField(
+                controller: dateController,
+                decoration: const InputDecoration(labelText: "Enter Date"),
+                readOnly: true,
                 onTap: () async {
                   DateTime? pickedDate = await showDatePicker(
                       context: context,

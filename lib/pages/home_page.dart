@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:uangkoo/models/database.dart';
 import 'package:uangkoo/models/transaction_with_category.dart';
 import 'package:uangkoo/pages/category_page.dart';
+import 'package:uangkoo/pages/transaction_page.dart';
 
 class HomePage extends StatefulWidget {
   final DateTime selectedDate;
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Outcome',
+                                  Text('Expense',
                                       style: GoogleFonts.montserrat(
                                           fontSize: 12, color: Colors.white)),
                                   SizedBox(
@@ -136,57 +137,84 @@ class _HomePageState extends State<HomePage> {
                     );
                   } else {
                     if (snapshot.hasData) {
-                      return ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Card(
-                                elevation: 10,
-                                child: ListTile(
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.delete),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      Icon(Icons.edit)
-                                    ],
-                                  ),
-                                  subtitle:
-                                      Text(snapshot.data![index].category.name),
-                                  leading: Container(
-                                      padding: EdgeInsets.all(3),
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: (snapshot
-                                                  .data![index].category.type ==
-                                              1)
-                                          ? Icon(
-                                              Icons.download,
-                                              color: Colors.greenAccent[400],
-                                            )
-                                          : Icon(
-                                              Icons.upload,
-                                              color: Colors.red[400],
-                                            )),
-                                  title: Text(
-                                    snapshot.data![index].transaction.amount
-                                        .toString(),
+                      if (snapshot.data!.length > 0) {
+                        return ListView.builder(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                child: Card(
+                                  elevation: 10,
+                                  child: ListTile(
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {}),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.edit),
+                                          onPressed: () {
+                                            Navigator.of(context)
+                                                .push(MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TransactionPage(
+                                                          transactionsWithCategory:
+                                                              snapshot.data![
+                                                                  index]),
+                                                ))
+                                                .then((value) {});
+                                          },
+                                        )
+                                      ],
+                                    ),
+                                    subtitle: Text(
+                                        snapshot.data![index].category.name),
+                                    leading: Container(
+                                        padding: EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                        child: (snapshot.data![index].category
+                                                    .type ==
+                                                1)
+                                            ? Icon(
+                                                Icons.download,
+                                                color: Colors.greenAccent[400],
+                                              )
+                                            : Icon(
+                                                Icons.upload,
+                                                color: Colors.red[400],
+                                              )),
+                                    title: Text(
+                                      snapshot.data![index].transaction.amount
+                                          .toString(),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            );
-                          });
+                              );
+                            });
+                      } else {
+                        return Center(
+                          child: Column(children: [
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text("Belum ada transaksi",
+                                style: GoogleFonts.montserrat()),
+                          ]),
+                        );
+                      }
                     } else {
                       return Center(
-                        child: Text("No has data"),
+                        child: Text("Belum ada transaksi"),
                       );
                     }
                   }

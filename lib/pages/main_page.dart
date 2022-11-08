@@ -29,16 +29,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    selectedDate =
-        DateTime.parse(DateFormat('yyyy-MM-dd').format(DateTime.now()));
-    currentIndex = 0;
-    _children = [
-      HomePage(
-        selectedDate: selectedDate,
-      ),
-      CategoryPage()
-    ];
+    updateView(0, DateTime.now());
+
     super.initState();
   }
 
@@ -49,6 +41,47 @@ class _MainPageState extends State<MainPage> {
   void showAwe() async {
     List<Category> al = await getAllCategory();
     print('PANJANG : ' + al.length.toString());
+  }
+
+  void showSuccess(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("OK"),
+      onPressed: () {},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("My title"),
+      content: Text("This is my message."),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  void updateView(int index, DateTime? date) {
+    setState(() {
+      if (date != null) {
+        selectedDate = DateTime.parse(DateFormat('yyyy-MM-dd').format(date));
+      }
+
+      currentIndex = index;
+      _children = [
+        HomePage(
+          selectedDate: selectedDate,
+        ),
+        CategoryPage()
+      ];
+    });
   }
 
   void onTabTapped(int index) {
@@ -74,17 +107,14 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(
-                      builder: (context) => TransactionPage(),
-                    ))
-                    .then((value) {});
-                currentIndex = 0;
-                _children = [
-                  HomePage(
-                    selectedDate: selectedDate,
-                  ),
-                  CategoryPage()
-                ];
-                setState(() {});
+                  builder: (context) =>
+                      TransactionPage(transactionsWithCategory: null),
+                ))
+                    .then((value) {
+                  setState(() {
+                    updateView(0, DateTime.now());
+                  });
+                });
               },
               backgroundColor: Colors.green,
               child: Icon(Icons.add)),
@@ -96,7 +126,7 @@ class _MainPageState extends State<MainPage> {
           children: [
             IconButton(
                 onPressed: () {
-                  onTabTapped(0);
+                  updateView(0, DateTime.now());
                 },
                 icon: Icon(Icons.home)),
             SizedBox(
@@ -104,7 +134,7 @@ class _MainPageState extends State<MainPage> {
             ),
             IconButton(
                 onPressed: () {
-                  onTabTapped(1);
+                  updateView(1, DateTime.now());
                 },
                 icon: Icon(Icons.list))
           ],
@@ -132,14 +162,7 @@ class _MainPageState extends State<MainPage> {
                 onDateChanged: (value) {
                   setState(() {
                     selectedDate = value;
-                    currentIndex = 0;
-                    _children = [
-                      HomePage(
-                        selectedDate: DateTime.parse(
-                            DateFormat('yyyy-MM-dd').format(selectedDate)),
-                      ),
-                      CategoryPage()
-                    ];
+                    updateView(0, selectedDate);
                   });
                 },
                 lastDate: DateTime.now()));
